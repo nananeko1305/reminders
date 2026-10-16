@@ -19,7 +19,11 @@ abstract class AppStrings
   const AppStrings();
 
   String get localeCode;
-  String get appName;
+
+  /// The app's name is English in every language, like the launcher label
+  /// and the user's other apps.
+  String get appName => 'Reminders';
+
   String get navEvents;
   String get navLists;
   // Common

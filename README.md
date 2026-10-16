@@ -1,4 +1,4 @@
-# Podsetnici (Flutter)
+# Reminders (Flutter)
 
 An Android reminder app: events that ring like an alarm, plus checklists for
 shopping and packing. Everything is stored on the phone; there is no backend.

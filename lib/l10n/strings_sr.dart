@@ -11,8 +11,6 @@ class StringsSr extends AppStrings
   @override
   String get localeCode => 'sr';
   @override
-  String get appName => 'Podsetnici';
-  @override
   String get navEvents => 'Podsetnici';
   @override
   String get navLists => 'Liste';
