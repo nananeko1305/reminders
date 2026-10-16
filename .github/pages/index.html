@@ -4,9 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Podsetnici — preuzimanje</title>
+  <link rel="icon" type="image/png" href="logo.png" />
 
   <!-- The deploy-pages job in release-apk.yml fills in the double-underscore
-       placeholders (download link, version, date) and generates qr.svg. -->
+       placeholders (download link, version, date), generates qr.svg and
+       copies logo.png from assets/icon. -->
   <style>
     :root {
       --brand: #3F51B5;
@@ -63,18 +65,12 @@
       color: #fff;
     }
 
-    .logo {
+    .header img {
       width: 88px;
       height: 88px;
-      margin: 0 auto;
-      display: grid;
-      place-items: center;
       border-radius: 22px;
-      background: rgba(255, 255, 255, 0.16);
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
     }
-
-    .logo svg { width: 52px; height: 52px; fill: #fff; }
 
     .header h1 { margin: 14px 0 4px; font-size: 24px; }
     .header p { margin: 0; opacity: 0.9; font-size: 14px; }
@@ -146,9 +142,7 @@
 <body>
   <main class="card">
     <div class="header">
-      <div class="logo" aria-hidden="true">
-        <svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
-      </div>
+      <img src="logo.png" alt="Podsetnici logo" />
       <h1>Podsetnici</h1>
       <p>Događaji sa alarmom i liste za kupovinu</p>
     </div>

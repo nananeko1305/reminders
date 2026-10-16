@@ -208,6 +208,7 @@ jobs:
           DL="https://github.com/${{ github.repository }}/releases/latest/download/${{ env.APK_NAME }}"
           mkdir -p _site
           cp .github/pages/index.html _site/index.html
+          cp assets/icon/logo.png _site/logo.png
           pip install --quiet qrcode
           python3 -c 'import sys, qrcode, qrcode.image.svg as svg; qrcode.make(sys.argv[1], image_factory=svg.SvgPathImage, box_size=10, border=2).save(sys.argv[2])' "$DL" _site/qr.svg
           cat > _site/version.json <<EOF
