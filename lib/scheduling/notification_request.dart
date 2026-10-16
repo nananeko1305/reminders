@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
+import '../models/ring_mode.dart';
+import '../models/ring_settings.dart';
 import 'planned_reminder.dart';
 
 /// Data carried inside a scheduled notification: the diff key, the event and
@@ -36,22 +38,62 @@ class NotificationPayload {
   }
 }
 
-/// A [PlannedReminder] ready for the OS: with its delivery mode. The mode is
-/// part of the key so granting exact-alarm access later reschedules
-/// everything exactly.
+/// How a notification presents itself; each maps to its own Android channel.
+enum NotificationStyle {
+  /// Loud and repeating on the alarm stream; full-screen over the lock screen
+  /// unless turned off.
+  alarm,
+
+  /// A normal notification with one sound.
+  sound,
+
+  /// Vibration only, no sound.
+  vibrate,
+}
+
+/// A [PlannedReminder] ready for the OS: with its delivery mode and how it
+/// rings. Both are part of the key, so granting exact-alarm access or
+/// changing the ring settings reschedules everything accordingly.
 class NotificationRequest {
   final PlannedReminder reminder;
   final bool exactAllowed;
+  final RingSettings ring;
 
-  const NotificationRequest(this.reminder, {required this.exactAllowed});
+  const NotificationRequest(
+    this.reminder, {
+    required this.exactAllowed,
+    this.ring = const RingSettings(),
+  });
 
-  String get key => '${reminder.key}|${exactAllowed ? 'exact' : 'inexact'}';
+  String get key => [
+        reminder.key,
+        exactAllowed ? 'exact' : 'inexact',
+        ring.mode.name,
+        if (atEventTime && style != NotificationStyle.vibrate)
+          ring.sound.uri ?? 'default-sound',
+        if (style == NotificationStyle.alarm && !ring.fullScreen) 'no-full-screen',
+      ].join('|');
+
+  /// The reminder at the event time is the one that uses the chosen sound.
+  bool get atEventTime => reminder.isAlarm;
+
+  NotificationStyle get style => switch (ring.mode) {
+        RingMode.vibrate => NotificationStyle.vibrate,
+        RingMode.notification => NotificationStyle.sound,
+        RingMode.alarm =>
+          atEventTime ? NotificationStyle.alarm : NotificationStyle.sound,
+      };
+
+  /// Only a full-screen alarm takes over the screen (see MainActivity.kt and
+  /// the alarm screen); otherwise a tap just opens the app.
+  bool get takesOverScreen =>
+      style == NotificationStyle.alarm && ring.fullScreen;
 
   /// The alarm uses the alarm-clock mode, which Android delivers on time even
-  /// in deep idle; earlier reminders only need to be exact.
+  /// in deep idle; everything else only needs to be exact.
   AndroidScheduleMode get scheduleMode {
     if (!exactAllowed) return AndroidScheduleMode.inexactAllowWhileIdle;
-    return reminder.isAlarm
+    return style == NotificationStyle.alarm
         ? AndroidScheduleMode.alarmClock
         : AndroidScheduleMode.exactAllowWhileIdle;
   }
@@ -65,6 +107,6 @@ class NotificationRequest {
   String get payload => NotificationPayload(
         key: key,
         eventId: reminder.eventId,
-        alarm: reminder.isAlarm,
+        alarm: takesOverScreen,
       ).encode();
 }

@@ -6,9 +6,11 @@ import 'package:reminders/app_scope.dart';
 import 'package:reminders/app_services.dart';
 import 'package:reminders/l10n/strings.dart';
 import 'package:reminders/models/event.dart';
+import 'package:reminders/models/ring_settings.dart';
 import 'package:reminders/scheduling/notification_permissions.dart';
 import 'package:reminders/scheduling/reminder_scheduler.dart';
 import 'package:reminders/scheduling/reminder_texts.dart';
+import 'package:reminders/scheduling/sound_picker.dart';
 import 'package:reminders/services/app_data_store.dart';
 import 'package:reminders/services/checklist_repository.dart';
 import 'package:reminders/services/event_repository.dart';
@@ -22,6 +24,7 @@ class FakeReminderScheduler implements ReminderScheduler {
   final syncs = <List<String>>[];
   final dismissed = <int>[];
   ReminderTexts? texts;
+  RingSettings ring = const RingSettings();
   int testAlarms = 0;
 
   /// Event ids of the latest sync.
@@ -29,6 +32,9 @@ class FakeReminderScheduler implements ReminderScheduler {
 
   @override
   Future<void> useTexts(ReminderTexts t) async => texts = t;
+
+  @override
+  void useRing(RingSettings settings) => ring = settings;
 
   @override
   Future<void> sync(List<Event> events) async =>
@@ -44,9 +50,13 @@ class FakeReminderScheduler implements ReminderScheduler {
   Future<void> scheduleTestAlarm() async => testAlarms++;
 }
 
-/// Everything allowed; prompts are counted.
+/// Everything allowed unless [fullScreen] is turned off; prompts are counted.
 class FakePermissions implements NotificationPermissions {
   int prompts = 0;
+  bool fullScreen = true;
+
+  @override
+  Future<bool> fullScreenAllowed() async => fullScreen;
 
   @override
   Future<bool> notificationsEnabled() async => true;
@@ -62,6 +72,22 @@ class FakePermissions implements NotificationPermissions {
   Future<void> openNotificationSettings() async {}
   @override
   Future<void> requestAll() async => prompts++;
+}
+
+/// Returns [next] from the picker (null = cancelled).
+class FakeSoundPicker implements SoundPicker {
+  AlarmSound? next;
+  int picks = 0;
+
+  @override
+  Future<AlarmSound?> pick(
+      {required AlarmSound current, required String title}) async {
+    picks++;
+    return next;
+  }
+
+  @override
+  Future<String?> titleOf(String uri) async => null;
 }
 
 /// Answers update checks with [result] (up to date unless set).
@@ -97,6 +123,8 @@ AppServices fakeServices({
   FakeReminderScheduler? scheduler,
   FakeUpdateChecker? updates,
   FakePushService? push,
+  FakePermissions? permissions,
+  FakeSoundPicker? sounds,
 }) {
   final s = scheduler ?? FakeReminderScheduler();
   final store = AppDataStore();
@@ -105,7 +133,8 @@ AppServices fakeServices({
     events: EventRepository(scheduler: s, store: store),
     checklists: ChecklistRepository(store: store),
     scheduler: s,
-    permissions: FakePermissions(),
+    permissions: permissions ?? FakePermissions(),
+    sounds: sounds ?? FakeSoundPicker(),
     taps: const Stream.empty(),
     updates: updates ?? FakeUpdateChecker(),
     push: push ?? FakePushService(),
@@ -116,8 +145,10 @@ AppServices fakeServices({
 Widget wrapInApp(Widget child, AppServices services) => AppScope(
       strings: AppStrings.of('sr'),
       themeMode: ThemeMode.light,
+      ring: const RingSettings(),
       services: services,
       setLocale: (_) {},
       setThemeMode: (_) {},
+      setRing: (_) {},
       child: MaterialApp(theme: buildLightTheme(), home: child),
     );

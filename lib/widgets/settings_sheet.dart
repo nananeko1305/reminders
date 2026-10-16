@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import '../app_scope.dart';
 import '../theme.dart';
 import 'permission_tile.dart';
+import 'ring_section.dart';
 import 'update_tile.dart';
 
-/// Language, theme, the permissions the alarm needs, and a test alarm.
+/// Language, theme, how reminders ring (mode, sound, full screen, a test),
+/// the permissions reminders need, and the update check.
 Future<void> showSettingsSheet(BuildContext context) => showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
@@ -99,6 +101,18 @@ class _SettingsSheetState extends State<_SettingsSheet> {
               onSelectionChanged: (v) => scope.setThemeMode(v.first),
             ),
             const SizedBox(height: 20),
+            Text(s.ringSection, style: sectionStyle),
+            const RingSection(),
+            const SizedBox(height: 4),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton.tonalIcon(
+                onPressed: _testAlarm,
+                icon: const Icon(Icons.play_arrow_rounded),
+                label: Text(s.testAlarm),
+              ),
+            ),
+            const SizedBox(height: 20),
             Text(s.notificationsSection, style: sectionStyle),
             PermissionTile(
               title: s.permNotifications,
@@ -114,22 +128,7 @@ class _SettingsSheetState extends State<_SettingsSheet> {
               allowed: _exact,
               onFix: () => permissions.requestExactAlarms().then((_) => _refresh()),
             ),
-            PermissionTile(
-              title: s.permFullScreen,
-              allowed: null,
-              hint: s.permFullScreenHint,
-              onFix: permissions.requestFullScreen,
-            ),
-            const SizedBox(height: 8),
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton.tonalIcon(
-                onPressed: _testAlarm,
-                icon: const Icon(Icons.alarm),
-                label: Text(s.testAlarm),
-              ),
-            ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 4),
             Text(s.batteryHint,
                 style: Theme.of(context)
                     .textTheme

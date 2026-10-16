@@ -6,6 +6,7 @@ import 'scheduling/local_timezone.dart';
 import 'scheduling/notification_bootstrap.dart';
 import 'scheduling/notification_permissions.dart';
 import 'scheduling/reminder_scheduler.dart';
+import 'scheduling/sound_picker.dart';
 import 'services/app_data_store.dart';
 import 'services/checklist_repository.dart';
 import 'services/event_repository.dart';
@@ -22,6 +23,7 @@ class AppServices {
   final ReminderScheduler scheduler;
   final NotificationPermissions permissions;
   final AlarmLockScreen lockScreen;
+  final SoundPicker sounds;
   final UpdateChecker updates;
   final PushService push;
 
@@ -41,6 +43,7 @@ class AppServices {
     required this.updates,
     required this.push,
     this.lockScreen = const AlarmLockScreen(),
+    this.sounds = const SoundPicker(),
     this.launchTap,
   });
 

@@ -3,21 +3,19 @@ import 'package:flutter/material.dart';
 import '../app_scope.dart';
 import '../theme.dart';
 
-/// Status of one Android permission with a button to fix it. [allowed] null
-/// means the status cannot be read, so only the button is offered.
+/// Status of one Android permission with a button to fix it. [allowed] is
+/// null while the status is still being read.
 class PermissionTile extends StatelessWidget {
   const PermissionTile({
     super.key,
     required this.title,
     required this.allowed,
     required this.onFix,
-    this.hint,
   });
 
   final String title;
   final bool? allowed;
   final VoidCallback onFix;
-  final String? hint;
 
   @override
   Widget build(BuildContext context) {
@@ -27,18 +25,14 @@ class PermissionTile extends StatelessWidget {
     return ListTile(
       contentPadding: EdgeInsets.zero,
       leading: Icon(
-        ok == null
-            ? Icons.fullscreen
-            : ok
-                ? Icons.check_circle
-                : Icons.error_outline,
+        ok == false ? Icons.error_outline : Icons.check_circle,
         color: ok == false ? p.alarm : p.brand,
       ),
       title: Text(title),
-      subtitle: Text(ok == null ? (hint ?? '') : (ok ? s.permAllowed : s.permMissing)),
-      trailing: ok == true
-          ? null
-          : TextButton(onPressed: onFix, child: Text(s.permFix)),
+      subtitle: ok == null ? null : Text(ok ? s.permAllowed : s.permMissing),
+      trailing: ok == false
+          ? TextButton(onPressed: onFix, child: Text(s.permFix))
+          : null,
     );
   }
 }

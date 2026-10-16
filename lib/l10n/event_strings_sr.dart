@@ -41,7 +41,7 @@ mixin EventStringsSr implements EventStrings {
   @override
   String get remindersLabel => 'Podseti me';
   @override
-  String get atEventTime => 'U trenutku događaja (alarm)';
+  String get atEventTime => 'U trenutku događaja';
   @override
   String get someRemindersUnavailable =>
       'Neki podsetnici nisu dostupni za ovo ponavljanje.';
@@ -66,6 +66,15 @@ mixin EventStringsSr implements EventStrings {
   String get channelAlarm => 'Alarm';
   @override
   String get channelAlarmDescription => 'Zvoni u trenutku događaja';
+  @override
+  String get channelSilent => 'Tihi podsetnici';
+  @override
+  String get channelSilentDescription => 'Samo vibracija, bez zvuka';
+  @override
+  String get channelStart => 'Početak događaja';
+  @override
+  String get channelStartDescription =>
+      'Izabrana melodija u trenutku događaja (režim Notifikacija)';
   @override
   String get testAlarmTitle => 'Test alarm';
 

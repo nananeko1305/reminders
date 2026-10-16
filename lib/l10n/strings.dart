@@ -1,4 +1,5 @@
 import '../models/reminder_offset.dart';
+import '../models/ring_mode.dart';
 import '../scheduling/reminder_texts.dart';
 import 'checklist_strings.dart';
 import 'event_strings.dart';
@@ -39,11 +40,17 @@ abstract class AppStrings
   String get themeSystem;
   String get themeLight;
   String get themeDark;
+  String get ringSection;
+  String get soundLabel;
+  String get soundDefault;
+  String get soundPickerTitle;
+  String get fullScreenLabel;
+  String get fullScreenOnHint;
+  String get fullScreenOffHint;
+  String get fullScreenNeedsPermission;
   String get notificationsSection;
   String get permNotifications;
   String get permExactAlarms;
-  String get permFullScreen;
-  String get permFullScreenHint;
   String get permAllowed;
   String get permMissing;
   String get permFix;
@@ -58,6 +65,12 @@ abstract class AppStrings
   // ---- Locale-specific phrases (implemented per language) ----
 
   String get nowLabel;
+  String ringModeLabel(RingMode mode);
+  String ringModeHint(RingMode mode);
+
+  /// Subtitle of the sound row: the sound's name and when it plays.
+  String soundSubtitle(String title);
+
   String inMinutes(int minutes);
   String inHours(int hours, int minutes);
   String inDays(int days);

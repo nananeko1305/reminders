@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 
 import '../app_scope.dart';
 import '../models/reminder_offset.dart';
+import '../models/ring_mode.dart';
 import '../theme.dart';
 
-/// The always-on alarm at the event time, plus a chip per optional reminder.
+/// The always-on reminder at the event time (its icon shows the ring mode),
+/// plus a chip per optional reminder.
 /// Offsets not [allowed] for the current recurrence are shown disabled.
 class ReminderChips extends StatelessWidget {
   const ReminderChips({
@@ -23,14 +25,21 @@ class ReminderChips extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final s = AppScope.of(context).strings;
+    final scope = AppScope.of(context);
+    final s = scope.strings;
     final p = palette(context);
+    final mode = scope.ring.mode;
+    final atTimeIcon = switch (mode) {
+      RingMode.alarm => Icons.alarm,
+      RingMode.notification => Icons.notifications_active_outlined,
+      RingMode.vibrate => Icons.vibration,
+    };
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Chip(
-          avatar: Icon(Icons.alarm, color: p.alarm),
-          label: Text(s.atEventTime),
+          avatar: Icon(atTimeIcon, color: p.alarm),
+          label: Text('${s.atEventTime} · ${s.ringModeLabel(mode)}'),
         ),
         const SizedBox(height: 4),
         Wrap(

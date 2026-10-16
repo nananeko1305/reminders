@@ -35,6 +35,10 @@ mixin EventStrings {
   String get channelRemindersDescription;
   String get channelAlarm;
   String get channelAlarmDescription;
+  String get channelSilent;
+  String get channelSilentDescription;
+  String get channelStart;
+  String get channelStartDescription;
   String get testAlarmTitle;
 
   String deleteEventMsg(String title);

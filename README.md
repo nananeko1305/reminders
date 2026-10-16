@@ -8,20 +8,36 @@ Serbian (Latin) by default, English in settings.
 
 - **Events** — title, date (calendar picker), time (24h), optional note and
   repeat: none / daily / weekly / monthly.
-- **Reminders** — at the event time the app always rings **as an alarm**: the
-  alarm sound (it plays on the alarm volume, so silent mode does not mute it),
-  repeating until dismissed, with the screen turned on over the lock screen.
-  Optional earlier reminders are normal notifications: 7 days, 1 day, 1 h,
-  30 min, 10 min before. Choices that make no sense for a repeat are locked
-  (e.g. "1 day before" on a daily event).
+- **Reminders** — one always fires at the event time; optional earlier ones
+  fire 7 days, 1 day, 1 h, 30 min or 10 min before. Choices that make no sense
+  for a repeat are locked (e.g. "1 day before" on a daily event).
+- **Ring mode** (Settings, one choice for all events):
+  - **Alarm** (default): at the event time the alarm sound rings on the alarm
+    volume, so silent mode does not mute it. It repeats until dismissed and
+    turns the screen on over the lock screen. Earlier reminders are
+    notifications with sound.
+  - **Notification**: every reminder plays one sound.
+  - **Vibrate only**: every reminder vibrates, no sound.
+
+  - **Sound**: any phone sound (ringtone, alarm or notification) from the
+    system picker. It plays at the event time; earlier reminders keep the
+    short notification sound.
+  - **Full-screen alarm** can be turned off. The alarm then rings as a
+    heads-up notification. Settings show the real Android 14+ permission
+    status, read in `MainActivity.kt`.
+
+  Android fixes a channel's sound when the channel is created, so each chosen
+  sound gets its own channel and old ones are deleted. Any change reschedules
+  everything already scheduled.
 - **Upcoming list** — events grouped by day (Danas, Sutra, "Subota, 18. okt")
   with a live countdown ("za 2 h 10 min"). Past one-time events go to a
   collapsed "Prošlo" section.
 - **Checklists** — any number of named lists (Prodavnica, Za put…). Checked
   items are struck through. Quick add, swipe to delete with undo, "uncheck
   all" to reuse a list, "delete checked".
-- **Settings** — language, theme, permission status with fix buttons, and a
-  **test alarm** that rings in 10 seconds.
+- **Settings** — language, theme, ring mode with a **try it** button that
+  rings in the chosen mode 10 seconds later, and permission status with fix
+  buttons.
 
 ## How reminders are scheduled
 
