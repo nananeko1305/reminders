@@ -1,0 +1,15 @@
+<!-- Podsetnici logo: bell + check badge. Source of logo.png; see README (Icon). -->
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024"><defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6F80E8"/><stop offset="1" stop-color="#2C3A8C"/></linearGradient>
+<radialGradient id="glow" cx="0.3" cy="0.2" r="0.8"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0.28"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></radialGradient>
+<linearGradient id="body" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#E4E8FA"/></linearGradient>
+<linearGradient id="coral" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF8A7A"/><stop offset="1" stop-color="#E5534B"/></linearGradient>
+<filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#0E1650" flood-opacity="0.35"/></filter>
+</defs>
+<rect width="1024" height="1024" rx="280" fill="url(#bg)"/><rect width="1024" height="1024" rx="280" fill="url(#glow)"/>
+<g filter="url(#shadow)" transform="translate(512 512) scale(1) translate(-570 -564)">
+<g transform="translate(470 500) scale(24) translate(-12 -12.25)" fill="url(#body)"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></g>
+<circle cx="700" cy="700" r="150" fill="url(#coral)" stroke="#FFFFFF" stroke-width="24"/>
+<path d="M630 702 L682 754 L776 650" fill="none" stroke="#FFFFFF" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+</svg>

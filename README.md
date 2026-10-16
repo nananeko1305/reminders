@@ -66,6 +66,23 @@ Local release builds are signed with the debug key unless
 `android/key.properties` exists. The CI build is signed with the release key,
 so switching between a local build and a GitHub one needs an uninstall.
 
+## Icon
+
+The logo (a bell with a check badge) lives in `assets/icon/` as SVG sources:
+
+- `logo.svg`: the full rounded icon. Used for legacy launchers and the download page.
+- `logo_background.svg` + `logo_foreground.svg`: the Android adaptive-icon layers. The foreground keeps the glyph inside the 66 dp safe zone, so no launcher mask clips it.
+
+After editing an SVG, render the PNGs and regenerate the launcher icons:
+
+```bash
+for n in logo logo_background logo_foreground; do
+  google-chrome --headless=new --hide-scrollbars --default-background-color=00000000 \
+    --window-size=1024,1024 --screenshot="$PWD/assets/icon/$n.png" "file://$PWD/assets/icon/$n.svg"
+done
+dart run flutter_launcher_icons
+```
+
 ## Release and update notifications
 
 Same pipeline as car_expenses. Day-to-day work goes to `dev`; merging into
