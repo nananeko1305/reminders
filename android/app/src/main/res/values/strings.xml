@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Release push notification; CI sends these keys, the phone picks the language. -->
+    <string name="update_notification_title">New version available</string>
+    <string name="update_notification_body">Version %1$s is ready. Tap to download.</string>
+    <string name="notification_channel_updates">Updates</string>
+    <color name="notification_accent">#3F51B5</color>
+</resources>
