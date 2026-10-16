@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "360893735312",
+    "project_id": "reminders-261016",
+    "storage_bucket": "reminders-261016.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:360893735312:android:fbadcd2c670871cffd9315",
+        "android_client_info": {
+          "package_name": "com.nananeko.reminders"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBRT_vt67km1sjpKHR2Bf1Vuoue61kdYbY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

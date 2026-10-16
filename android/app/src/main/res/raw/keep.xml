@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Resources looked up only by name at runtime, which release resource
+     shrinking cannot see:
+     - the notification icon, referenced from Dart;
+     - the release push strings: CI sends title_loc_key/body_loc_key, and
+       without these the notification shows up empty. -->
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@drawable/ic_stat_reminder,@string/update_notification_title,@string/update_notification_body" />
