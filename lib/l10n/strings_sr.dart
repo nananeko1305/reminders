@@ -1,3 +1,4 @@
+import '../models/ring_mode.dart';
 import 'checklist_strings_sr.dart';
 import 'event_strings_sr.dart';
 import 'strings.dart';
@@ -37,16 +38,30 @@ class StringsSr extends AppStrings
   @override
   String get themeDark => 'Tamna';
   @override
-  String get notificationsSection => 'Zvono i notifikacije';
+  String get ringSection => 'Zvonjenje';
+  @override
+  String get soundLabel => 'Melodija';
+  @override
+  String get soundDefault => 'Podrazumevani zvuk alarma';
+  @override
+  String get soundPickerTitle => 'Melodija podsetnika';
+  @override
+  String get fullScreenLabel => 'Alarm preko celog ekrana';
+  @override
+  String get fullScreenOnHint =>
+      'Alarm pali ekran i kad je telefon zaključan.';
+  @override
+  String get fullScreenOffHint =>
+      'Alarm zvoni kao notifikacija, ne pali ekran.';
+  @override
+  String get fullScreenNeedsPermission =>
+      'Telefon još ne dozvoljava — dodirni Podesi.';
+  @override
+  String get notificationsSection => 'Dozvole';
   @override
   String get permNotifications => 'Notifikacije';
   @override
   String get permExactAlarms => 'Tačni alarmi';
-  @override
-  String get permFullScreen => 'Alarm preko celog ekrana';
-  @override
-  String get permFullScreenHint =>
-      'Potrebno da alarm upali ekran kad je telefon zaključan (Android 14+).';
   @override
   String get permAllowed => 'Dozvoljeno';
   @override
@@ -54,10 +69,10 @@ class StringsSr extends AppStrings
   @override
   String get permFix => 'Podesi';
   @override
-  String get testAlarm => 'Test alarm (za 10 s)';
+  String get testAlarm => 'Probaj zvonjenje (za 10 s)';
   @override
   String get testAlarmScheduled =>
-      'Alarm stiže za 10 sekundi — zaključaj telefon da probaš.';
+      'Zvoni za 10 sekundi — zaključaj telefon da probaš.';
   @override
   String get batteryHint =>
       'Ako alarm kasni ili ne zvoni, isključi optimizaciju baterije za ovu aplikaciju.';
@@ -81,6 +96,25 @@ class StringsSr extends AppStrings
 
   @override
   String get nowLabel => 'sada';
+
+  @override
+  String ringModeLabel(RingMode mode) => switch (mode) {
+        RingMode.alarm => 'Alarm',
+        RingMode.notification => 'Notifikacija',
+        RingMode.vibrate => 'Samo vibracija',
+      };
+
+  @override
+  String soundSubtitle(String title) => '$title · u trenutku događaja';
+
+  @override
+  String ringModeHint(RingMode mode) => switch (mode) {
+        RingMode.alarm =>
+          'Glasno i ponavlja se dok ga ne ugasiš, i preko zaključanog ekrana. Raniji podsetnici su notifikacije.',
+        RingMode.notification =>
+          'Jedan zvuk, kao poruka. Važi za sve podsetnike.',
+        RingMode.vibrate => 'Bez zvuka, samo vibrira. Važi za sve podsetnike.',
+      };
 
   @override
   String inMinutes(int minutes) => 'za $minutes min';

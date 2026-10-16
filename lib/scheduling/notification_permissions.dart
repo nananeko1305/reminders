@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 /// What the alarm needs from Android, and the system screens to grant it.
@@ -9,6 +10,9 @@ class NotificationPermissions {
             AndroidFlutterLocalNotificationsPlugin>();
 
   final AndroidFlutterLocalNotificationsPlugin? _android;
+
+  /// MainActivity.kt; the plugin cannot read the full-screen permission.
+  static const _device = MethodChannel('reminders/device');
 
   Future<bool> notificationsEnabled() async =>
       await _guard(() => _android?.areNotificationsEnabled()) ?? true;
@@ -22,8 +26,19 @@ class NotificationPermissions {
   Future<void> requestExactAlarms() =>
       _guard(() => _android?.requestExactAlarmsPermission());
 
-  /// Android 14+: opens the system screen unless already granted. Its status
-  /// cannot be read back, so this is offered as a button only.
+  /// Android 14+ lets users revoke full-screen alarms; always true below.
+  Future<bool> fullScreenAllowed() async {
+    try {
+      return await _device.invokeMethod<bool>('canUseFullScreenIntent') ?? true;
+    } on MissingPluginException {
+      return true;
+    } catch (e) {
+      debugPrint('Full-screen check failed: $e');
+      return true;
+    }
+  }
+
+  /// Android 14+: opens the system screen unless already granted.
   Future<void> requestFullScreen() =>
       _guard(() => _android?.requestFullScreenIntentPermission());
 

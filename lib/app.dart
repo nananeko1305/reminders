@@ -6,6 +6,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'app_scope.dart';
 import 'app_services.dart';
 import 'l10n/strings.dart';
+import 'models/ring_settings.dart';
 import 'scheduling/notification_bootstrap.dart';
 import 'screens/alarm_screen.dart';
 import 'screens/home_shell.dart';
@@ -37,6 +38,7 @@ class _AppRootState extends State<AppRoot> {
 
   String _localeCode = 'sr';
   ThemeMode _themeMode = ThemeMode.system;
+  RingSettings _ring = const RingSettings();
 
   AppServices get _services => widget.services;
 
@@ -64,10 +66,12 @@ class _AppRootState extends State<AppRoot> {
     final settings = _services.settings;
     final locale = await settings.loadLocale();
     final themeMode = await settings.loadThemeMode();
+    final ring = await settings.loadRing();
     if (!mounted) return;
     setState(() {
       _localeCode = locale;
       _themeMode = themeMode;
+      _ring = ring;
     });
 
     final launch = _services.launchTap;
@@ -75,6 +79,7 @@ class _AppRootState extends State<AppRoot> {
       WidgetsBinding.instance.addPostFrameCallback((_) => _openTap(launch));
     }
     await _services.scheduler.useTexts(AppStrings.of(locale));
+    _services.scheduler.useRing(ring);
     await _services.events.resync();
 
     // Ask once, and not on top of a ringing alarm.
@@ -133,15 +138,26 @@ class _AppRootState extends State<AppRoot> {
     await _services.settings.saveThemeMode(mode);
   }
 
+  /// Saves the settings and reschedules everything already scheduled to
+  /// ring the new way.
+  Future<void> _setRing(RingSettings ring) async {
+    setState(() => _ring = ring);
+    await _services.settings.saveRing(ring);
+    _services.scheduler.useRing(ring);
+    await _services.events.resync();
+  }
+
   @override
   Widget build(BuildContext context) {
     final strings = AppStrings.of(_localeCode);
     return AppScope(
       strings: strings,
       themeMode: _themeMode,
+      ring: _ring,
       services: _services,
       setLocale: _setLocale,
       setThemeMode: _setThemeMode,
+      setRing: _setRing,
       child: MaterialApp(
         navigatorKey: _navigatorKey,
         title: strings.appName,

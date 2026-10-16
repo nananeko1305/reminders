@@ -41,7 +41,7 @@ mixin EventStringsEn implements EventStrings {
   @override
   String get remindersLabel => 'Remind me';
   @override
-  String get atEventTime => 'At the event time (alarm)';
+  String get atEventTime => 'At the event time';
   @override
   String get someRemindersUnavailable =>
       'Some reminders are not available for this repeat.';
@@ -66,6 +66,15 @@ mixin EventStringsEn implements EventStrings {
   String get channelAlarm => 'Alarm';
   @override
   String get channelAlarmDescription => 'Rings when an event starts';
+  @override
+  String get channelSilent => 'Silent reminders';
+  @override
+  String get channelSilentDescription => 'Vibration only, no sound';
+  @override
+  String get channelStart => 'Event start';
+  @override
+  String get channelStartDescription =>
+      'The chosen sound when an event starts (Notification mode)';
   @override
   String get testAlarmTitle => 'Test alarm';
 

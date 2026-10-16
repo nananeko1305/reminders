@@ -3,10 +3,12 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 import '../models/event.dart';
+import '../models/ring_settings.dart';
 import 'local_timezone.dart';
 import 'notification_channels.dart';
 import 'notification_permissions.dart';
 import 'notification_request.dart';
+import 'planned_reminder.dart';
 import 'reminder_planner.dart';
 import 'reminder_scheduler.dart';
 import 'reminder_texts.dart';
@@ -34,6 +36,7 @@ class LocalNotificationScheduler implements ReminderScheduler {
   final ReminderPlanner _planner;
 
   ReminderTexts? _texts;
+  RingSettings _ring = const RingSettings();
   List<Event> _latest = const [];
   Future<void>? _running;
   bool _again = false;
@@ -41,12 +44,33 @@ class LocalNotificationScheduler implements ReminderScheduler {
   @override
   Future<void> useTexts(ReminderTexts texts) async {
     _texts = texts;
-    final android = _plugin.resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>();
-    await android?.createNotificationChannel(
-        NotificationChannels.reminderChannel(texts));
-    await android
-        ?.createNotificationChannel(NotificationChannels.alarmChannel(texts));
+    await _createChannels(texts);
+  }
+
+  @override
+  void useRing(RingSettings ring) => _ring = ring;
+
+  AndroidFlutterLocalNotificationsPlugin? get _android =>
+      _plugin.resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>();
+
+  /// (Re)creates the channels the current settings use; creating an existing
+  /// channel only refreshes its name.
+  Future<void> _createChannels(ReminderTexts texts) async {
+    for (final channel in NotificationChannels.all(texts, _ring.sound)) {
+      await _android?.createNotificationChannel(channel);
+    }
+  }
+
+  /// Deletes channels of sounds no longer chosen, so the system settings
+  /// show only what is in use.
+  Future<void> _deleteStaleChannels() async {
+    final channels = await _android?.getNotificationChannels() ?? const [];
+    for (final channel in channels) {
+      if (NotificationChannels.isStale(channel.id, _ring.sound)) {
+        await _android?.deleteNotificationChannel(channelId: channel.id);
+      }
+    }
   }
 
   @override
@@ -75,15 +99,16 @@ class LocalNotificationScheduler implements ReminderScheduler {
     final texts = _texts;
     if (texts == null) return;
     try {
+      await _createChannels(texts);
       final location = await _timezone.refresh();
       final exact = await _permissions.exactAlarmsAllowed();
       final planned = _planner.plan(events,
           now: tz.TZDateTime.now(location), body: texts.reminderBody);
-      final requests = {
-        for (final r in planned)
-          NotificationRequest(r, exactAllowed: exact).key:
-              NotificationRequest(r, exactAllowed: exact),
-      };
+      final requests = <String, NotificationRequest>{};
+      for (final r in planned) {
+        final request = NotificationRequest(r, exactAllowed: exact, ring: _ring);
+        requests[request.key] = request;
+      }
       final pending = await _plugin.pendingNotificationRequests();
       final active = await _plugin.getActiveNotifications();
       final diff = ScheduleDiff.compute(
@@ -98,6 +123,8 @@ class LocalNotificationScheduler implements ReminderScheduler {
       for (final MapEntry(:key, value: id) in diff.schedule.entries) {
         await _schedule(id, requests[key]!, texts);
       }
+      // After rescheduling, so nothing pending still points at them.
+      await _deleteStaleChannels();
     } catch (e, stack) {
       debugPrint('Reminder sync failed: $e\n$stack');
     }
@@ -112,9 +139,7 @@ class LocalNotificationScheduler implements ReminderScheduler {
         title: r.title,
         body: r.body,
         scheduledDate: r.fireAt,
-        notificationDetails: r.isAlarm
-            ? NotificationChannels.alarm(texts)
-            : NotificationChannels.reminder(texts),
+        notificationDetails: NotificationChannels.forRequest(request, texts),
         androidScheduleMode: request.scheduleMode,
         matchDateTimeComponents: request.matchDateTimeComponents,
         payload: request.payload,
@@ -141,18 +166,25 @@ class LocalNotificationScheduler implements ReminderScheduler {
     if (texts == null) return;
     final location = await _timezone.refresh();
     final at = tz.TZDateTime.now(location).add(const Duration(seconds: 10));
-    final exact = await _permissions.exactAlarmsAllowed();
+    final request = NotificationRequest(
+      PlannedReminder(
+        eventId: '',
+        offset: null,
+        fireAt: at,
+        title: texts.testAlarmTitle,
+        body: texts.reminderBody(null, at),
+      ),
+      exactAllowed: await _permissions.exactAlarmsAllowed(),
+      ring: _ring,
+    );
     await _plugin.zonedSchedule(
       id: testAlarmId,
-      title: texts.testAlarmTitle,
-      body: texts.reminderBody(null, at),
+      title: request.reminder.title,
+      body: request.reminder.body,
       scheduledDate: at,
-      notificationDetails: NotificationChannels.alarm(texts),
-      androidScheduleMode: exact
-          ? AndroidScheduleMode.alarmClock
-          : AndroidScheduleMode.inexactAllowWhileIdle,
-      payload: const NotificationPayload(key: 'test', eventId: '', alarm: true)
-          .encode(),
+      notificationDetails: NotificationChannels.forRequest(request, texts),
+      androidScheduleMode: request.scheduleMode,
+      payload: request.payload,
     );
   }
 }

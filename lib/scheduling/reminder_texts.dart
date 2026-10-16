@@ -7,6 +7,10 @@ abstract interface class ReminderTexts {
   String get channelRemindersDescription;
   String get channelAlarm;
   String get channelAlarmDescription;
+  String get channelSilent;
+  String get channelSilentDescription;
+  String get channelStart;
+  String get channelStartDescription;
   String get dismissAlarm;
   String get testAlarmTitle;
 

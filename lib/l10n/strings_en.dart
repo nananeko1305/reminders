@@ -1,3 +1,4 @@
+import '../models/ring_mode.dart';
 import 'checklist_strings_en.dart';
 import 'event_strings_en.dart';
 import 'strings.dart';
@@ -37,16 +38,30 @@ class StringsEn extends AppStrings
   @override
   String get themeDark => 'Dark';
   @override
-  String get notificationsSection => 'Ringing and notifications';
+  String get ringSection => 'Ringing';
+  @override
+  String get soundLabel => 'Sound';
+  @override
+  String get soundDefault => 'Default alarm sound';
+  @override
+  String get soundPickerTitle => 'Reminder sound';
+  @override
+  String get fullScreenLabel => 'Full-screen alarm';
+  @override
+  String get fullScreenOnHint =>
+      'The alarm turns the screen on, even when the phone is locked.';
+  @override
+  String get fullScreenOffHint =>
+      'The alarm rings as a notification without turning the screen on.';
+  @override
+  String get fullScreenNeedsPermission =>
+      'The phone does not allow it yet — tap Fix.';
+  @override
+  String get notificationsSection => 'Permissions';
   @override
   String get permNotifications => 'Notifications';
   @override
   String get permExactAlarms => 'Exact alarms';
-  @override
-  String get permFullScreen => 'Full-screen alarm';
-  @override
-  String get permFullScreenHint =>
-      'Lets the alarm turn the screen on while the phone is locked (Android 14+).';
   @override
   String get permAllowed => 'Allowed';
   @override
@@ -54,10 +69,10 @@ class StringsEn extends AppStrings
   @override
   String get permFix => 'Fix';
   @override
-  String get testAlarm => 'Test alarm (in 10 s)';
+  String get testAlarm => 'Try the ringing (in 10 s)';
   @override
   String get testAlarmScheduled =>
-      'The alarm rings in 10 seconds — lock the phone to try it.';
+      'It rings in 10 seconds — lock the phone to try it.';
   @override
   String get batteryHint =>
       'If the alarm is late or silent, turn off battery optimization for this app.';
@@ -81,6 +96,26 @@ class StringsEn extends AppStrings
 
   @override
   String get nowLabel => 'now';
+
+  @override
+  String ringModeLabel(RingMode mode) => switch (mode) {
+        RingMode.alarm => 'Alarm',
+        RingMode.notification => 'Notification',
+        RingMode.vibrate => 'Vibrate only',
+      };
+
+  @override
+  String soundSubtitle(String title) => '$title · plays at the event time';
+
+  @override
+  String ringModeHint(RingMode mode) => switch (mode) {
+        RingMode.alarm =>
+          'Loud and repeating until you dismiss it, even over the lock screen. Earlier reminders are notifications.',
+        RingMode.notification =>
+          'One sound, like a message. Applies to all reminders.',
+        RingMode.vibrate =>
+          'No sound, just vibration. Applies to all reminders.',
+      };
 
   @override
   String inMinutes(int minutes) => 'in $minutes min';

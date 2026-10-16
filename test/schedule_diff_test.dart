@@ -4,6 +4,8 @@ import 'package:timezone/data/latest_all.dart' as tzdata;
 import 'package:timezone/timezone.dart' as tz;
 
 import 'package:reminders/models/reminder_offset.dart';
+import 'package:reminders/models/ring_mode.dart';
+import 'package:reminders/models/ring_settings.dart';
 import 'package:reminders/scheduling/notification_request.dart';
 import 'package:reminders/scheduling/planned_reminder.dart';
 import 'package:reminders/scheduling/schedule_diff.dart';
@@ -88,6 +90,44 @@ void main() {
     test('mode is part of the key', () {
       expect(NotificationRequest(reminder(null), exactAllowed: true).key,
           isNot(NotificationRequest(reminder(null), exactAllowed: false).key));
+    });
+
+    test('ring mode picks the channel style', () {
+      NotificationStyle style(ReminderOffset? offset, RingMode mode) =>
+          NotificationRequest(reminder(offset),
+                  exactAllowed: true, ring: RingSettings(mode: mode))
+              .style;
+      expect(style(null, RingMode.alarm), NotificationStyle.alarm);
+      expect(style(ReminderOffset.hour, RingMode.alarm), NotificationStyle.sound);
+      expect(style(null, RingMode.notification), NotificationStyle.sound);
+      expect(style(ReminderOffset.hour, RingMode.vibrate),
+          NotificationStyle.vibrate);
+      expect(style(null, RingMode.vibrate), NotificationStyle.vibrate);
+    });
+
+    test('only a real alarm takes over the screen and uses alarm-clock mode',
+        () {
+      for (final mode in RingMode.values) {
+        final request = NotificationRequest(reminder(null),
+            exactAllowed: true, ring: RingSettings(mode: mode));
+        final isAlarm = mode == RingMode.alarm;
+        expect(NotificationPayload.decode(request.payload)!.alarm, isAlarm);
+        expect(
+            request.scheduleMode,
+            isAlarm
+                ? AndroidScheduleMode.alarmClock
+                : AndroidScheduleMode.exactAllowWhileIdle);
+      }
+    });
+
+    test('changing the ring mode changes the key, so sync reschedules', () {
+      final keys = {
+        for (final mode in RingMode.values)
+          NotificationRequest(reminder(ReminderOffset.day),
+                  exactAllowed: true, ring: RingSettings(mode: mode))
+              .key,
+      };
+      expect(keys, hasLength(RingMode.values.length));
     });
 
     test('repeat maps to the matching date components', () {
