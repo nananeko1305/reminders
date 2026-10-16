@@ -5,7 +5,8 @@ on:
     branches: [main]
   workflow_dispatch:
 
-# Needed to publish a Release (contents) and the update manifest (pages).
+# Needed to publish a Release (contents) and the download page + update
+# manifest (pages).
 permissions:
   contents: write
   pages: write
@@ -45,15 +46,19 @@ jobs:
           channel: stable
           cache: true
 
-      # Caches Gradle dependencies and build cache — the slowest part of the
-      # Android build (Flutter SDK + pub are cached by flutter-action above).
+      # Caches Gradle dependencies AND task outputs (org.gradle.caching in
+      # android/gradle.properties), so the plugins' Java/Kotlin compilation
+      # is reused while only Dart code changes. R8 still reruns: the version
+      # changes every release and is one of its inputs. The key covers the
+      # Gradle files and pubspec.lock, so a fresh entry is saved only when
+      # the build setup or a plugin changes, not uploaded on every release.
       - name: Cache Gradle
         uses: actions/cache@v4
         with:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
-          key: gradle-${{ runner.os }}-${{ hashFiles('android/**/*.gradle*', 'android/**/gradle-wrapper.properties') }}
+          key: gradle-${{ runner.os }}-${{ hashFiles('android/**/*.gradle*', 'android/gradle.properties', 'android/**/gradle-wrapper.properties', 'pubspec.lock') }}
           restore-keys: |
             gradle-${{ runner.os }}-
 
@@ -179,25 +184,43 @@ jobs:
             Download `${{ env.APK_NAME }}` below and install it on Android (allow
             installation from unknown sources).
 
-  # Installed apps learn about a new release from version.json on GitHub
-  # Pages (UpdateChecker in lib/services). There is no download page any
-  # more, only this file; dropping the job would leave every install
-  # reading a stale version forever.
+  # Every release redeploys GitHub Pages:
+  # - the download page (button + QR for the newest APK) from .github/pages;
+  # - version.json, which installed apps read to find updates
+  #   (UpdateChecker in lib/updates). Dropping it would leave every install
+  #   reading a stale version forever.
   deploy-pages:
-    name: Publish version.json
+    name: Deploy download page
     needs: build
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Write version.json
+      - uses: actions/checkout@v4
+
+      # The QR is an SVG from the pure-Python qrcode package: no apt-get,
+      # no image libraries.
+      - name: Build static site
+        env:
+          VERSION: ${{ needs.build.outputs.version }}
         run: |
           DL="https://github.com/${{ github.repository }}/releases/latest/download/${{ env.APK_NAME }}"
           mkdir -p _site
+          cp .github/pages/index.html _site/index.html
+          pip install --quiet qrcode
+          python3 -c 'import sys, qrcode, qrcode.image.svg as svg; qrcode.make(sys.argv[1], image_factory=svg.SvgPathImage, box_size=10, border=2).save(sys.argv[2])' "$DL" _site/qr.svg
           cat > _site/version.json <<EOF
-          {"version":"${{ needs.build.outputs.version }}","build":${{ github.run_number }},"url":"$DL"}
+          {"version":"$VERSION","build":${{ github.run_number }},"url":"$DL"}
           EOF
+          sed -i \
+            -e "s|__DOWNLOAD_URL__|$DL|g" \
+            -e "s|__VERSION__|$VERSION|g" \
+            -e "s|__DATE__|$(TZ=Europe/Belgrade date +%d.%m.%Y.)|g" \
+            _site/index.html
+          if grep -q '__[A-Z_]*__' _site/index.html; then
+            echo "::error::Unfilled placeholder in index.html"; exit 1
+          fi
 
       - uses: actions/configure-pages@v5
         with:
