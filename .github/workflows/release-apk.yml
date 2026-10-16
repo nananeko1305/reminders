@@ -168,7 +168,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ steps.ver.outputs.version }}
-          name: Podsetnici ${{ steps.ver.outputs.version }}
+          name: Reminders ${{ steps.ver.outputs.version }}
           files: |
             ${{ env.APK_NAME }}
             ${{ env.APK_NAME }}.sha256

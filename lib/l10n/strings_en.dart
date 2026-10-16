@@ -11,8 +11,6 @@ class StringsEn extends AppStrings
   @override
   String get localeCode => 'en';
   @override
-  String get appName => 'Reminders';
-  @override
   String get navEvents => 'Reminders';
   @override
   String get navLists => 'Lists';
