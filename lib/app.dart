@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'app_scope.dart';
@@ -172,6 +173,12 @@ class _AppRootState extends State<AppRoot> {
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
+        // Screens without an app bar (loading, the alarm sets its own) still
+        // get status-bar icons that match the theme.
+        builder: (context, child) => AnnotatedRegion<SystemUiOverlayStyle>(
+          value: overlayStyle(Theme.of(context).brightness),
+          child: child!,
+        ),
         home: const HomeShell(),
       ),
     );
