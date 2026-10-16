@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:reminders/app.dart';
+import 'package:reminders/widgets/empty_state.dart';
 
 import 'fakes/fakes.dart';
 
@@ -26,6 +27,11 @@ void main() {
     await tester.tap(find.text('Liste'));
     await tester.pumpAndSettle();
     expect(find.text('Nema lista'), findsOneWidget);
+    // The placeholder sits in the middle of the tab, not in its top-left corner.
+    final placeholder = tester.getCenter(find.descendant(
+        of: find.byType(EmptyState), matching: find.byType(Column)));
+    final tab = tester.getRect(find.byType(IndexedStack));
+    expect((placeholder - tab.center).distance, lessThan(1));
 
     // A second launch does not ask again.
     await tester.pumpWidget(const SizedBox());

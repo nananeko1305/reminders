@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="sr-Latn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Podsetnici — preuzimanje</title>
+
+  <!-- The deploy-pages job in release-apk.yml fills in the double-underscore
+       placeholders (download link, version, date) and generates qr.svg. -->
+  <style>
+    :root {
+      --brand: #3F51B5;
+      --brand-dark: #2C3A8C;
+      --alarm: #D9534F;
+      --bg: #F3F4FA;
+      --card: #FFFFFF;
+      --text: #1F2440;
+      --muted: #5E6480;
+      --border: #DEE1F0;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --brand: #8C9EFF;
+        --brand-dark: #4B5BC4;
+        --alarm: #FF8A80;
+        --bg: #0F111A;
+        --card: #181B26;
+        --text: #E6E8F5;
+        --muted: #9CA2BF;
+        --border: #2A2F45;
+      }
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+    }
+
+    .header {
+      background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+      padding: 32px 24px;
+      text-align: center;
+      color: #fff;
+    }
+
+    .logo {
+      width: 88px;
+      height: 88px;
+      margin: 0 auto;
+      display: grid;
+      place-items: center;
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.16);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    }
+
+    .logo svg { width: 52px; height: 52px; fill: #fff; }
+
+    .header h1 { margin: 14px 0 4px; font-size: 24px; }
+    .header p { margin: 0; opacity: 0.9; font-size: 14px; }
+
+    .body { padding: 24px; text-align: center; }
+
+    .meta {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .chip {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      background: rgba(127, 127, 127, 0.10);
+      border-radius: 999px;
+      padding: 4px 12px;
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      color: #fff;
+      background: var(--brand);
+      text-decoration: none;
+      font-size: 17px;
+      font-weight: 700;
+      padding: 16px;
+      border-radius: 12px;
+      transition: opacity 0.15s, transform 0.15s;
+    }
+
+    .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+    .qr {
+      margin: 24px auto 8px;
+      width: 200px;
+      height: 200px;
+      background: #fff;
+      border-radius: 12px;
+      padding: 10px;
+      border: 1px solid var(--border);
+    }
+
+    .qr img { width: 100%; height: 100%; display: block; image-rendering: pixelated; }
+
+    .hint { font-size: 13px; color: var(--muted); margin: 8px 0 0; }
+
+    .note {
+      margin-top: 20px;
+      font-size: 12.5px;
+      color: var(--muted);
+      line-height: 1.5;
+      text-align: left;
+      background: rgba(127, 127, 127, 0.06);
+      border-left: 3px solid var(--alarm);
+      border-radius: 10px;
+      padding: 12px 14px;
+    }
+
+    .footer { margin-top: 18px; font-size: 11px; color: var(--muted); }
+  </style>
+</head>
+
+<body>
+  <main class="card">
+    <div class="header">
+      <div class="logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+      </div>
+      <h1>Podsetnici</h1>
+      <p>Događaji sa alarmom i liste za kupovinu</p>
+    </div>
+
+    <div class="body">
+      <div class="meta">
+        <span class="chip">v__VERSION__</span>
+        <span class="chip">__DATE__</span>
+      </div>
+
+      <a class="btn" href="__DOWNLOAD_URL__" download>📲 Preuzmi za Android</a>
+
+      <div class="qr">
+        <img src="qr.svg" alt="QR kod za preuzimanje aplikacije" />
+      </div>
+
+      <p class="hint">Skeniraj QR kod telefonom da preuzmeš APK</p>
+
+      <div class="note">
+        <strong>Instalacija:</strong>
+        otvori preuzeti <code>.apk</code> na telefonu i dozvoli instalaciju iz
+        nepoznatih izvora ako telefon pita. Pri prvom pokretanju dozvoli
+        notifikacije, da bi podsetnici i alarm mogli da zvone.
+      </div>
+
+      <div class="footer">Podsetnici · automatski build</div>
+    </div>
+  </main>
+</body>
+</html>
