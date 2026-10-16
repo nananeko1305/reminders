@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 /// Semantic colors for the app, resolved per light/dark theme via a
 /// [ThemeExtension]. Access with [palette].
@@ -87,18 +88,36 @@ ThemeData buildLightTheme() => _build(
       AppPalette.light,
       Brightness.light,
       scaffold: const Color(0xFFF3F4FA),
-      appBar: AppPalette.light.brand,
+      ink: const Color(0xFF1F2440),
     );
 
 ThemeData buildDarkTheme() => _build(
       AppPalette.dark,
       Brightness.dark,
       scaffold: const Color(0xFF0F111A),
-      appBar: const Color(0xFF151827),
+      ink: const Color(0xFFE6E8F5),
     );
 
+/// Status and navigation bar icons: dark on the light theme, light on the
+/// dark theme, over transparent bars. The navigation icons are set too:
+/// SystemUiOverlayStyle.dark assumes a black navigation bar and would make
+/// them light, invisible over the light theme.
+SystemUiOverlayStyle overlayStyle(Brightness brightness) {
+  final icons =
+      brightness == Brightness.dark ? Brightness.light : Brightness.dark;
+  return (brightness == Brightness.dark
+          ? SystemUiOverlayStyle.light
+          : SystemUiOverlayStyle.dark)
+      .copyWith(
+    statusBarColor: Colors.transparent,
+    statusBarIconBrightness: icons,
+    systemNavigationBarColor: Colors.transparent,
+    systemNavigationBarIconBrightness: icons,
+  );
+}
+
 ThemeData _build(AppPalette p, Brightness brightness,
-    {required Color scaffold, required Color appBar}) {
+    {required Color scaffold, required Color ink}) {
   final scheme = ColorScheme.fromSeed(
     seedColor: p.brand,
     brightness: brightness,
@@ -111,10 +130,16 @@ ThemeData _build(AppPalette p, Brightness brightness,
     colorScheme: scheme,
     scaffoldBackgroundColor: scaffold,
     extensions: [p],
+    // The bar takes the page colour, so the status bar above it needs dark
+    // icons on the light theme; Flutter would infer light ones from a dark
+    // bar, so the style is set explicitly from the theme.
     appBarTheme: AppBarTheme(
-      backgroundColor: appBar,
-      foregroundColor: Colors.white,
+      backgroundColor: scaffold,
+      surfaceTintColor: Colors.transparent,
+      foregroundColor: ink,
       elevation: 0,
+      scrolledUnderElevation: 0,
+      systemOverlayStyle: overlayStyle(brightness),
     ),
     cardTheme: CardThemeData(
       color: p.cardSurface,

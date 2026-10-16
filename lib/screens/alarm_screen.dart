@@ -66,47 +66,62 @@ class _AlarmScreenState extends State<AlarmScreen> {
     final event = widget.event;
     const white = Colors.white;
 
-    return Scaffold(
-      backgroundColor: p.alarm,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            children: [
-              const Spacer(),
-              const Icon(Icons.alarm, size: 96, color: white),
-              const SizedBox(height: 12),
-              Text(s.time(DateTime.now()),
-                  style: text.displayLarge?.copyWith(color: white)),
-              const SizedBox(height: 24),
-              Text(
-                event?.title ?? s.testAlarmTitle,
-                textAlign: TextAlign.center,
-                style: text.headlineMedium
-                    ?.copyWith(color: white, fontWeight: FontWeight.w600),
-              ),
-              if (event != null && event.note.isNotEmpty) ...[
-                const SizedBox(height: 8),
-                Text(event.note,
-                    textAlign: TextAlign.center,
-                    style: text.bodyLarge?.copyWith(color: white)),
-              ],
-              const SizedBox(height: 8),
-              Text(s.startsNow,
-                  style: text.titleMedium?.copyWith(color: white.withValues(alpha: 0.85))),
-              const Spacer(),
-              FilledButton.icon(
-                onPressed: _dismiss,
-                icon: const Icon(Icons.alarm_off),
-                label: Text(s.dismissAlarm),
-                style: FilledButton.styleFrom(
-                  backgroundColor: white,
-                  foregroundColor: p.alarm,
-                  minimumSize: const Size.fromHeight(64),
-                  textStyle: text.titleLarge,
+    // Light status-bar icons on the coral background (there is no app bar
+    // to set them).
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: overlayStyle(Brightness.dark),
+      child: Scaffold(
+        backgroundColor: p.alarm,
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              children: [
+                const Spacer(),
+                const Icon(Icons.alarm, size: 96, color: white),
+                const SizedBox(height: 12),
+                Text(
+                  s.time(DateTime.now()),
+                  style: text.displayLarge?.copyWith(color: white),
                 ),
-              ),
-            ],
+                const SizedBox(height: 24),
+                Text(
+                  event?.title ?? s.testAlarmTitle,
+                  textAlign: TextAlign.center,
+                  style: text.headlineMedium?.copyWith(
+                    color: white,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                if (event != null && event.note.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    event.note,
+                    textAlign: TextAlign.center,
+                    style: text.bodyLarge?.copyWith(color: white),
+                  ),
+                ],
+                const SizedBox(height: 8),
+                Text(
+                  s.startsNow,
+                  style: text.titleMedium?.copyWith(
+                    color: white.withValues(alpha: 0.85),
+                  ),
+                ),
+                const Spacer(),
+                FilledButton.icon(
+                  onPressed: _dismiss,
+                  icon: const Icon(Icons.alarm_off),
+                  label: Text(s.dismissAlarm),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: white,
+                    foregroundColor: p.alarm,
+                    minimumSize: const Size.fromHeight(64),
+                    textStyle: text.titleLarge,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
