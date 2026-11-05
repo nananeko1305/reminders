@@ -8,7 +8,6 @@ import 'scheduling/notification_permissions.dart';
 import 'scheduling/reminder_scheduler.dart';
 import 'scheduling/sound_picker.dart';
 import 'services/app_data_store.dart';
-import 'services/checklist_repository.dart';
 import 'services/event_repository.dart';
 import 'services/settings_store.dart';
 import 'updates/push_service.dart';
@@ -19,7 +18,6 @@ import 'updates/update_checker.dart';
 class AppServices {
   final SettingsStore settings;
   final EventRepository events;
-  final ChecklistRepository checklists;
   final ReminderScheduler scheduler;
   final NotificationPermissions permissions;
   final AlarmLockScreen lockScreen;
@@ -36,7 +34,6 @@ class AppServices {
   const AppServices({
     required this.settings,
     required this.events,
-    required this.checklists,
     required this.scheduler,
     required this.permissions,
     required this.taps,
@@ -62,7 +59,6 @@ class AppServices {
     return AppServices(
       settings: SettingsStore(),
       events: EventRepository(scheduler: scheduler, store: store),
-      checklists: ChecklistRepository(store: store),
       scheduler: scheduler,
       permissions: permissions,
       taps: bootstrap.taps,

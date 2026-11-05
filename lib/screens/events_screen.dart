@@ -87,8 +87,6 @@ class _EventsScreenState extends State<EventsScreen> {
     final events = _events;
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        // Both tabs stay mounted in an IndexedStack; tags must differ.
-        heroTag: 'events-fab',
         onPressed: _openForm,
         tooltip: s.newEvent,
         child: const Icon(Icons.add),

@@ -1,7 +1,6 @@
 import '../models/reminder_offset.dart';
 import '../models/ring_mode.dart';
 import '../scheduling/reminder_texts.dart';
-import 'checklist_strings.dart';
 import 'event_strings.dart';
 import 'strings_en.dart';
 import 'strings_sr.dart';
@@ -11,11 +10,11 @@ import 'update_strings.dart';
 ///
 /// Translations live in one file per language: Serbian (Latin) in
 /// [StringsSr], English in [StringsEn]. Feature strings are declared in their
-/// own contracts ([EventStrings], [ChecklistStrings], [UpdateStrings]), each
+/// own contracts ([EventStrings], [UpdateStrings]), each
 /// implemented per language in its own file. Shared formatting is
 /// implemented here.
 abstract class AppStrings
-    with EventStrings, ChecklistStrings, UpdateStrings
+    with EventStrings, UpdateStrings
     implements ReminderTexts {
   const AppStrings();
 
@@ -26,13 +25,11 @@ abstract class AppStrings
   String get appName => 'Reminders';
 
   String get navEvents;
-  String get navLists;
   // Common
   String get save;
   String get cancel;
   String get delete;
   String get rename;
-  String get undo;
   // Settings
   String get settings;
   String get language;
@@ -102,8 +99,6 @@ abstract class AppStrings
         1 => tomorrow,
         _ => '${weekday(day)}, ${shortDate(day)}',
       };
-
-  String progress(int done, int total) => '$done/$total';
 
   @override
   String reminderBody(ReminderOffset? offset, DateTime occurrence) =>

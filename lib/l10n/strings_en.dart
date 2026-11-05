@@ -1,20 +1,17 @@
 import '../models/ring_mode.dart';
-import 'checklist_strings_en.dart';
 import 'event_strings_en.dart';
 import 'strings.dart';
 import 'update_strings_en.dart';
 
 /// English translations.
 class StringsEn extends AppStrings
-    with EventStringsEn, ChecklistStringsEn, UpdateStringsEn {
+    with EventStringsEn, UpdateStringsEn {
   const StringsEn();
 
   @override
   String get localeCode => 'en';
   @override
   String get navEvents => 'Reminders';
-  @override
-  String get navLists => 'Lists';
   @override
   String get save => 'Save';
   @override
@@ -23,8 +20,6 @@ class StringsEn extends AppStrings
   String get delete => 'Delete';
   @override
   String get rename => 'Rename';
-  @override
-  String get undo => 'Undo';
   @override
   String get settings => 'Settings';
   @override
