@@ -4,15 +4,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:reminders/models/app_data.dart';
-import 'package:reminders/models/checklist.dart';
-import 'package:reminders/models/checklist_item.dart';
 import 'package:reminders/models/event.dart';
 import 'package:reminders/models/recurrence.dart';
 import 'package:reminders/models/reminder_offset.dart';
 import 'package:reminders/services/app_data_store.dart';
 
 void main() {
-  test('round-trips events and checklists through JSON', () {
+  test('round-trips events through JSON', () {
     final data = AppData(
       events: [
         Event(
@@ -24,11 +22,6 @@ void main() {
           reminders: {ReminderOffset.day, ReminderOffset.tenMinutes},
         ),
       ],
-      checklists: [
-        Checklist(id: 'c', name: 'Prodavnica', items: [
-          ChecklistItem(id: 'i', text: 'mleko', done: true),
-        ]),
-      ],
     );
 
     final back = AppData.fromJson(
@@ -39,8 +32,6 @@ void main() {
     expect(e.start, DateTime(2026, 10, 20, 14, 30));
     expect(e.recurrence, Recurrence.weekly);
     expect(e.reminders, {ReminderOffset.day, ReminderOffset.tenMinutes});
-    final item = back.checklists.single.items.single;
-    expect([item.text, item.done], ['mleko', true]);
   });
 
   test('unknown values fall back instead of failing', () {
@@ -59,6 +50,30 @@ void main() {
     SharedPreferences.setMockInitialValues({'reminders_app_data': '{oops'});
     final data = await AppDataStore().read();
     expect(data.events, isEmpty);
-    expect(data.checklists, isEmpty);
+  });
+
+  // Lists moved to the Shopping List app. Phones updating from an older
+  // version still hold them in the same blob next to their events.
+  test('data with old lists keeps its events and drops the lists', () async {
+    SharedPreferences.setMockInitialValues({
+      'reminders_app_data': jsonEncode({
+        'events': [
+          {'id': 'e', 'title': 'Zubar', 'start': '2026-10-20T09:00:00.000'},
+        ],
+        'checklists': [
+          {'id': 'c', 'name': 'Prodavnica', 'items': []},
+        ],
+      }),
+    });
+    final store = AppDataStore();
+    expect((await store.read()).events.single.title, 'Zubar');
+
+    await store.update((data) => data.events.single.title = 'Lekar');
+
+    final prefs = await SharedPreferences.getInstance();
+    final saved =
+        jsonDecode(prefs.getString('reminders_app_data')!) as Map<String, dynamic>;
+    expect(saved.containsKey('checklists'), isFalse);
+    expect((await store.read()).events.single.title, 'Lekar');
   });
 }

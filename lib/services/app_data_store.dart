@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/app_data.dart';
 
 /// Low-level persistence of [AppData] as a single JSON blob in
-/// [SharedPreferences]. Knows nothing about events or lists; it reads and
+/// [SharedPreferences]. Knows nothing about events; it reads and
 /// writes, seeding an empty store on first run and recovering from a corrupt
 /// payload. Share one instance so [update] can serialize writers.
 class AppDataStore {
@@ -24,8 +24,8 @@ class AppDataStore {
     }
   }
 
-  /// Read-modify-write, one at a time, so two quick edits (an event and a list
-  /// item, say) never overwrite each other. Returns what [mutate] returns.
+  /// Read-modify-write, one at a time, so two quick edits (two events in a
+  /// row, say) never overwrite each other. Returns what [mutate] returns.
   Future<T> update<T>(T Function(AppData data) mutate) {
     final result = _tail.then((_) async {
       final data = await read();

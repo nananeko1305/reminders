@@ -12,7 +12,6 @@ import 'package:reminders/scheduling/reminder_scheduler.dart';
 import 'package:reminders/scheduling/reminder_texts.dart';
 import 'package:reminders/scheduling/sound_picker.dart';
 import 'package:reminders/services/app_data_store.dart';
-import 'package:reminders/services/checklist_repository.dart';
 import 'package:reminders/services/event_repository.dart';
 import 'package:reminders/services/settings_store.dart';
 import 'package:reminders/theme.dart';
@@ -131,7 +130,6 @@ AppServices fakeServices({
   return AppServices(
     settings: SettingsStore(),
     events: EventRepository(scheduler: s, store: store),
-    checklists: ChecklistRepository(store: store),
     scheduler: s,
     permissions: permissions ?? FakePermissions(),
     sounds: sounds ?? FakeSoundPicker(),

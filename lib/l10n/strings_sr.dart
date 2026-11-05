@@ -1,20 +1,17 @@
 import '../models/ring_mode.dart';
-import 'checklist_strings_sr.dart';
 import 'event_strings_sr.dart';
 import 'strings.dart';
 import 'update_strings_sr.dart';
 
 /// Serbian (Latin) translations.
 class StringsSr extends AppStrings
-    with EventStringsSr, ChecklistStringsSr, UpdateStringsSr {
+    with EventStringsSr, UpdateStringsSr {
   const StringsSr();
 
   @override
   String get localeCode => 'sr';
   @override
   String get navEvents => 'Podsetnici';
-  @override
-  String get navLists => 'Liste';
   @override
   String get save => 'Sačuvaj';
   @override
@@ -23,8 +20,6 @@ class StringsSr extends AppStrings
   String get delete => 'Obriši';
   @override
   String get rename => 'Preimenuj';
-  @override
-  String get undo => 'Vrati';
   @override
   String get settings => 'Podešavanja';
   @override

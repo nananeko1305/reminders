@@ -1,7 +1,8 @@
 # Reminders (Flutter)
 
-An Android reminder app: events that ring like an alarm, plus checklists for
-shopping and packing. Everything is stored on the phone; there is no backend.
+An Android reminder app: events that ring like an alarm. Everything is stored
+on the phone; there is no backend. Shopping and packing lists moved to their
+own app, [Shopping List](https://github.com/nananeko1305/shopping-list).
 Serbian (Latin) by default, English in settings.
 
 ## Features
@@ -32,9 +33,6 @@ Serbian (Latin) by default, English in settings.
 - **Upcoming list** — events grouped by day (Danas, Sutra, "Subota, 18. okt")
   with a live countdown ("za 2 h 10 min"). Past one-time events go to a
   collapsed "Prošlo" section.
-- **Checklists** — any number of named lists (Prodavnica, Za put…). Checked
-  items are struck through. Quick add, swipe to delete with undo, "uncheck
-  all" to reuse a list, "delete checked".
 - **Settings** — language, theme, ring mode with a **try it** button that
   rings in the chosen mode 10 seconds later, and permission status with fix
   buttons.

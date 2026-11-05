@@ -9,7 +9,7 @@ import 'package:flutter/services.dart';
 class AppPalette extends ThemeExtension<AppPalette> {
   final Color brand; // primary
   final Color alarm; // the at-event-time alarm, past/delete accents
-  final Color muted; // checked items, secondary text
+  final Color muted; // secondary text
   final Color cardSurface;
   final Color cardBorder;
   final Color bannerBg; // notifications-off warning
