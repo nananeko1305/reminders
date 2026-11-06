@@ -3,6 +3,11 @@ name: Build & Release APK
 on:
   push:
     branches: [main]
+    # A change to the download page alone is not a release: pages.yml
+    # redeploys the page for the current APK instead.
+    paths-ignore:
+      - '.github/pages/**'
+      - '.github/workflows/pages.yml'
   workflow_dispatch:
 
 # Needed to publish a Release (contents) and the download page + update
@@ -206,22 +211,12 @@ jobs:
           VERSION: ${{ needs.build.outputs.version }}
         run: |
           DL="https://github.com/${{ github.repository }}/releases/latest/download/${{ env.APK_NAME }}"
-          mkdir -p _site
-          cp .github/pages/index.html _site/index.html
-          cp assets/icon/logo.png _site/logo.png
           pip install --quiet qrcode
-          python3 -c 'import sys, qrcode, qrcode.image.svg as svg; qrcode.make(sys.argv[1], image_factory=svg.SvgPathImage, box_size=10, border=2).save(sys.argv[2])' "$DL" _site/qr.svg
+          DOWNLOAD_URL="$DL" DATE="$(TZ=Europe/Belgrade date +%d.%m.%Y.)" \
+            bash .github/pages/build.sh
           cat > _site/version.json <<EOF
           {"version":"$VERSION","build":${{ github.run_number }},"url":"$DL"}
           EOF
-          sed -i \
-            -e "s|__DOWNLOAD_URL__|$DL|g" \
-            -e "s|__VERSION__|$VERSION|g" \
-            -e "s|__DATE__|$(TZ=Europe/Belgrade date +%d.%m.%Y.)|g" \
-            _site/index.html
-          if grep -q '__[A-Z_]*__' _site/index.html; then
-            echo "::error::Unfilled placeholder in index.html"; exit 1
-          fi
 
       - uses: actions/configure-pages@v5
         with:
