@@ -6,9 +6,9 @@
   <title>Reminders — preuzimanje</title>
   <link rel="icon" type="image/png" href="logo.png" />
 
-  <!-- The deploy-pages job in release-apk.yml fills in the double-underscore
-       placeholders (download link, version, date), generates qr.svg and
-       copies logo.png from assets/icon. -->
+  <!-- .github/pages/build.sh fills in the double-underscore placeholders
+       (download link, version, date), generates qr.svg and copies logo.png
+       from assets/icon. -->
   <style>
     :root {
       --brand: #3F51B5;
@@ -109,6 +109,18 @@
 
     .btn:hover { opacity: 0.9; transform: translateY(-1px); }
 
+    .btn.share {
+      margin-top: 10px;
+      padding: 12px;
+      font: inherit;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--brand);
+      background: transparent;
+      border: 2px solid var(--brand);
+      cursor: pointer;
+    }
+
     .qr {
       margin: 24px auto 8px;
       width: 200px;
@@ -136,6 +148,56 @@
     }
 
     .footer { margin-top: 18px; font-size: 11px; color: var(--muted); }
+
+    /* Laptops and desktops: the card becomes the whole screen, split in two,
+       and nothing scrolls. Sizes follow the window height so it all fits.
+       Phones keep the layout above. */
+    @media (min-width: 900px) {
+      html, body { height: 100%; overflow: hidden; }
+      body { padding: 0; }
+
+      .card {
+        max-width: none;
+        height: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+      }
+
+      .header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 5vh 4vw;
+      }
+      .header img {
+        width: clamp(96px, 20vh, 168px);
+        height: clamp(96px, 20vh, 168px);
+        border-radius: 24%;
+      }
+      .header h1 { margin: 3vh 0 1vh; font-size: clamp(28px, 6vh, 52px); }
+      .header p { font-size: clamp(15px, 2.6vh, 22px); }
+
+      .body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 4vh 4vw;
+      }
+      .body > * { width: 100%; max-width: 420px; }
+      .meta { margin-bottom: 2.5vh; }
+      .qr {
+        width: clamp(130px, 27vh, 240px);
+        height: clamp(130px, 27vh, 240px);
+        margin: 3vh auto 1vh;
+      }
+      .note { margin-top: 2.5vh; }
+      .footer { margin-top: 2vh; }
+    }
   </style>
 </head>
 
@@ -154,6 +216,7 @@
       </div>
 
       <a class="btn" href="__DOWNLOAD_URL__" download>📲 Preuzmi za Android</a>
+      <button class="btn share" id="share" type="button">🔗 Podeli</button>
 
       <div class="qr">
         <img src="qr.svg" alt="QR kod za preuzimanje aplikacije" />
@@ -171,5 +234,27 @@
       <div class="footer">Reminders · automatski build</div>
     </div>
   </main>
+
+  <script>
+    // Shares this page rather than the APK link: the page has the QR code and
+    // the install steps. Browsers without a share sheet (most desktop ones)
+    // copy the link instead.
+    const shareBtn = document.getElementById('share');
+    const shareLabel = shareBtn.textContent;
+    shareBtn.addEventListener('click', async () => {
+      const url = location.origin + location.pathname;
+      if (navigator.share) {
+        try { await navigator.share({ title: document.title, url }); } catch (_) {}
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(url);
+        shareBtn.textContent = '✓ Link kopiran';
+        setTimeout(() => { shareBtn.textContent = shareLabel; }, 2000);
+      } catch (_) {
+        prompt('Kopiraj link:', url);
+      }
+    });
+  </script>
 </body>
 </html>
